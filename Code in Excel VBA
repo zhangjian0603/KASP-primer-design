@@ -1,0 +1,839 @@
+Sub EasyKASP()
+Dim i As Long, n As Integer, m As Double, j As Double
+Dim ka As Integer, kt As Integer, kc As Integer, kg As Integer
+Dim kk1 As Integer, kk2 As Integer, kk3 As Integer, h As Integer
+Dim sF As String, sR As String, FR As Integer, k As Integer
+Dim jj As Integer, q1 As Integer, q2 As Integer, gc As Integer
+Dim ss As String, kkf As Integer, kkr As Integer, m2 As Integer
+Dim tim As Long, h2 As Integer
+
+tim = Timer
+i = 2
+j = 2
+h2 = 0
+Do While Len(Cells(i, 1)) <> 0
+ Application.ScreenUpdating = False
+   Cells(i, 4) = UCase(WorksheetFunction.Substitute(WorksheetFunction.Clean(Trim(Cells(i, 4))), " ", ""))
+   Cells(i, 4) = WorksheetFunction.Substitute(Cells(i, 4), "-", "")
+   Cells(i, 4) = WorksheetFunction.Substitute(Cells(i, 4), "_", "")
+FR = 0
+sR = ""
+sF = ""
+m = 0
+ss = ""
+gc = 0
+h = 0
+If Len(Cells(i, 4)) - Len(WorksheetFunction.Substitute(Cells(i, 4), "[", "")) > 1 Then Cells(i, 1) = Cells(i, 1) & " Variation mistake"
+If Len(Cells(i, 4)) - Len(WorksheetFunction.Substitute(Cells(i, 4), "[", "")) > 1 Then Cells(i, 5) = "Failed"
+
+Do While FR = 0
+If InStr(1, Cells(i, 4), "[") = 0 Or InStr(1, Cells(i, 4), "]") = 0 Or InStr(1, Cells(i, 4), "/") = 0 Then Cells(i, 5) = "Failed"
+If InStr(1, Cells(i, 4), ",") <> 0 Or InStr(1, Cells(i, 4), "\") <> 0 Or InStr(1, Cells(i, 4), "*") <> 0 Then Cells(i, 5) = "Failed"
+If Cells(i, 5) = "Failed" Then Exit Do
+kk1 = 0
+kk2 = 0
+kk3 = 0
+q1 = 0
+q2 = 0
+ka = 0
+kt = 0
+kc = 0
+kg = 0
+k = 0
+
+ kk1 = WorksheetFunction.Find("[", Cells(i, 4), 1)
+ kk2 = WorksheetFunction.Find("/", Mid(Cells(i, 4), kk1 + 1, Len(Cells(i, 4)) - kk1), 1)
+ kk2 = kk2 + kk1
+ kk3 = WorksheetFunction.Find("]", Cells(i, 4), 1)
+
+If UCase(Cells(i, 2)) <> Mid(Cells(i, 4), kk1 + 1, kk2 - kk1 - 1) Or UCase(Cells(i, 3)) <> Mid(Cells(i, 4), kk2 + 1, kk3 - kk2 - 1) Then Cells(i, 1) = Cells(i, 1) & " Allele mistake"
+Cells(i, 2) = Mid(Cells(i, 4), kk1 + 1, kk2 - kk1 - 1)
+Cells(i, 3) = Mid(Cells(i, 4), kk2 + 1, kk3 - kk2 - 1)
+
+Do While Right(Cells(i, 1), 7) = "mistake"
+    Cells(i, 1).Select
+    With Selection.Interior
+        .PatternColorIndex = xlAutomatic
+        .Color = 255
+    End With
+Exit Do
+Loop
+
+
+
+If kk1 >= 27 Then sF = Mid(Cells(i, 4), kk1 - 26, 26) & Cells(i, 2)
+If kk1 < 27 Then sF = Mid(Cells(i, 4), 1, kk1 - 1) & Cells(i, 2)
+sR = Cells(i, 2) & Mid(Cells(i, 4), kk3 + 1, 26)
+sF = Right(sF, 26)
+sR = Left(sR, 26)
+
+
+n = Len(sF)
+Do While n > 0
+   If Mid(sF, n, 1) = "A" Then ka = ka + 1
+   If Mid(sF, n, 1) = "T" Then kt = kt + 1
+   If Mid(sF, n, 1) = "C" Then kc = kc + 1
+   If Mid(sF, n, 1) = "G" Then kg = kg + 1
+   n = n - 1
+   Loop
+   If InStr(1, sF, "AAAAAA") <> 0 Or InStr(1, sF, "TTTTTT") <> 0 Or InStr(1, sF, "CCCCCC") <> 0 Or InStr(1, sF, "GGGGGG") <> 0 Or Len(sF) <> ka + kt + kg + kc Then FR = -1 
+    m = (kg + kc) / (kg + kc + kt + ka) * 100
+ka = 0
+kt = 0
+kc = 0
+kg = 0
+
+n = Len(sR)
+Do While n > 0
+   If UCase(Mid(sR, n, 1)) = "A" Then ka = ka + 1
+   If UCase(Mid(sR, n, 1)) = "T" Then kt = kt + 1
+   If UCase(Mid(sR, n, 1)) = "C" Then kc = kc + 1
+   If UCase(Mid(sR, n, 1)) = "G" Then kg = kg + 1
+   n = n - 1
+   Loop
+   If InStr(1, sR, "AAAAAA") <> 0 Or InStr(1, sR, "TTTTTT") <> 0 Or InStr(1, sR, "CCCCCC") <> 0 Or InStr(1, sR, "GGGGGG") <> 0 Or Len(sR) <> ka + kg + kc + kt Then FR = FR + 100 
+   If FR = 99 Then Cells(i, 5) = "Failed"
+   If FR = 99 Then Exit Do
+   If FR = 100 Then FR = 1
+   
+
+kkf = 0
+
+Do While Len(Cells(i, 2)) <> 1 Or Len(Cells(i, 3)) <> 1
+         kkf = 1
+         kkr = 1
+         h = 999
+      Do While Len(Cells(i, 2)) >= Len(Cells(i, 3))
+        
+         sF = Left(Cells(i, 2), 6)
+         sR = Cells(i, 3) & Mid(Cells(i, 4), kk3 + 1, 6)
+         Do While kkf < 6
+            If Left(sF, kkf) <> Left(sR, kkf) Then Exit Do
+            If Left(sF, kkf) = Left(sR, kkf) Then kkf = kkf + 1
+        Loop
+          sF = Right(Cells(i, 2), 6)
+          sR = Mid(Cells(i, 4), kk1 - 6, 6) & Cells(i, 3)
+         Do While kkr < 6
+            If Right(sF, kkr) <> Right(sR, kkr) Then Exit Do
+            If Right(sF, kkr) = Right(sR, kkr) Then kkr = kkr + 1
+         Loop
+         
+         If WorksheetFunction.Min(kkf, kkr) = 5 Then Cells(i, 5) = "Failed"
+         If FR = 1 And kkf = 5 Then Cells(i, 5) = "Failed"
+         If FR = -1 And kkr = 5 Then Cells(i, 5) = "Failed"
+         If kkf < kkr And FR = 0 Then FR = 1
+         If kkf > kkr And FR = 0 Then FR = -1
+       
+         Exit Do
+         Loop
+        
+     Do While Len(Cells(i, 2)) < Len(Cells(i, 3))
+        sF = Left(Cells(i, 3), 6)
+        sR = Cells(i, 2) & Mid(Cells(i, 4), kk3 + 1, 6)
+        
+         Do While kkf < 6
+            If Left(sF, kkf) <> Left(sR, kkf) Then Exit Do
+            If Left(sF, kkf) = Left(sR, kkf) Then kkf = kkf + 1
+         Loop
+    sF = Right(Cells(i, 3), 6)
+    sR = Mid(Cells(i, 4), kk1 - 6, 6) & Cells(i, 2)
+         
+         Do While kkr < 6
+            If Right(sF, kkr) <> Right(sR, kkr) Then Exit Do
+            If Right(sF, kkr) = Right(sR, kkr) Then kkr = kkr + 1
+                        
+         Loop
+     
+         If WorksheetFunction.Min(kkf, kkr) = 6 Then Cells(i, 5) = "Failed"
+         If FR = 1 And kkf = 5 Then Cells(i, 5) = "Failed"
+         If FR = -1 And kkr = 5 Then Cells(i, 5) = "Failed"
+         If kkf < kkr And FR = 0 Then FR = 1
+         If kkf > kkr And FR = 0 Then FR = -1
+
+         Exit Do
+         Loop
+  Exit Do
+  Loop
+  
+If Cells(i, 2) = Cells(i, 3) Then Cells(i, 5) = "Failed"
+If Cells(i, 5) = "Failed" Then Exit Do
+
+
+If Abs(m - 45) <= Abs(((kg + kc) / (kg + kc + kt + ka) * 100) - 45) And FR = 0 Then gc = 1
+If Abs(m - 45) <= Abs(((kg + kc) / (kg + kc + kt + ka) * 100) - 45) And FR = 0 Then FR = 1
+If Abs(m - 45) > Abs(((kg + kc) / (kg + kc + kt + ka) * 100) - 45) And FR = 0 Then gc = 2
+If Abs(m - 45) > Abs(((kg + kc) / (kg + kc + kt + ka) * 100) - 45) And FR = 0 Then FR = -1
+
+Do While gc = 1 Or gc = 2
+If InStr(Mid(Cells(i, 4), kk1 - 3, 3), "AAA") <> 0 Or InStr(Mid(Cells(i, 4), kk1 - 3, 3), "TTT") <> 0 Then FR = -1
+If InStr(Mid(Cells(i, 4), kk3 + 1, 4), "AAAA") <> 0 Or InStr(Mid(Cells(i, 4), kk3 + 1, 4), "TTTT") <> 0 Then FR = 1
+If InStr(Mid(Cells(i, 4), kk3 + 1, 3), "AAA") <> 0 Or InStr(Mid(Cells(i, 4), kk3 + 1, 3), "TTT") <> 0 Then FR = 1
+If InStr(Mid(Cells(i, 4), kk1 - 3, 4), "AAAA") <> 0 Or InStr(Mid(Cells(i, 4), kk1 - 3, 4), "TTTT") <> 0 Then FR = -1
+Exit Do
+Loop
+
+    n = 0
+    m = 0
+
+If Len(Cells(i, 4)) - kk3 < 70 Then q2 = 70 - (Len(Cells(i, 4)) - kk3)
+If q2 > 0 Then n = q2
+Do While n > 0
+   Cells(i, 4) = Cells(i, 4) & "Q"
+   n = n - 1
+   Loop
+n = 0
+
+If kk1 < 70 Then q1 = 70 - kk1
+If q1 > 0 Then n = q1
+Do While n > 0
+   Cells(i, 4) = "Q" & Cells(i, 4)
+   n = n - 1
+   Loop
+ n = 0
+ kk1 = WorksheetFunction.Find("[", Cells(i, 4), 1)
+ kk2 = WorksheetFunction.Find("/", Mid(Cells(i, 4), kk1 + 1, Len(Cells(i, 4)) - kk1), 1)
+ kk2 = kk2 + kk1
+ kk3 = WorksheetFunction.Find("]", Cells(i, 4), 1)
+
+   sR = ""
+   sF = ""
+    m2 = 1
+    ss = ""
+   Do While Len(Cells(i, 2)) = 1 And Len(Cells(i, 3)) = 1
+   m2 = 3
+   ss = Cells(i, 2) & Cells(i, 3)
+   If ss = "AT" Or ss = "GC" Or ss = "TA" Or ss = "CG" Then m2 = 0
+     ss = ""
+   Exit Do
+   Loop
+    
+
+Do While FR = 1 Or FR = 0
+   k = 38
+  ss = Mid(Cells(i, 4), kk1 - 40, 40) & Cells(i, 2)
+  If h = 999 And Len(Cells(i, 2)) <= 38 And Len(Cells(i, 2)) >= kkf Then ss = Mid(Cells(i, 4), kk1 - 40, 40) & Left(Cells(i, 2), kkf)
+  If h = 999 And Len(Cells(i, 2)) < kkf Then ss = Mid(Cells(i, 4), kk1 - 40, 40) & Cells(i, 2) & Mid(Cells(i, 4), kk3 + 1, kkf - Len(Cells(i, 2)))
+
+Do While Len(Cells(i, 8)) = 0 Or Cells(i, 8) >= 56.6
+   If Cells(i, 8) >= 56.6 Then k = k - 1
+   sF = Right(ss, k)
+   n = Len(sF)
+   If n < 18 And Cells(i, 8) <= 59 And Cells(i, 8) > 0 Then sF = Right(ss, k + 1)
+   If k < 18 Then Exit Do
+    ka = 0
+    kt = 0
+    kg = 0
+    kc = 0
+  Do While n > 0
+   If UCase(Mid(sF, n, 1)) = "A" Then ka = ka + 1
+   If UCase(Mid(sF, n, 1)) = "T" Then kt = kt + 1
+   If UCase(Mid(sF, n, 1)) = "C" Then kc = kc + 1
+   If UCase(Mid(sF, n, 1)) = "G" Then kg = kg + 1
+   n = n - 1
+   Loop
+    j = 0
+    If ka + kt + kc + kg < 18 Then Exit Do
+    If Len(sF) = ka + kt + kg + kc And (kg + kc) / (ka + kt + kg + kc) <= 0.72 And (kg + kc) / (ka + kt + kg + kc) >= 0.16 Then j = 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc)
+    If j >= 56.6 And j <= 59 Then Cells(i, 8) = j
+    Do While Cells(i, 8) > 0
+    If InStr(1, sF, "AAAAAA") <> 0 Or InStr(1, sF, "TTTTTT") <> 0 Or InStr(1, sF, "CCCCCC") <> 0 Or InStr(1, sF, "GGGGGG") <> 0 Then Cells(i, 8) = ""
+    Exit Do
+    Loop
+    
+    If Cells(i, 8) > 0 And Cells(i, 8) <= 57.8 Then Exit Do
+   If Cells(i, 8) > 0 And Len(sF) = ka + kt + kg + kc And Len(sF) = ka + kt + kg + kc And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 56.1 Then sF = Right(ss, k + 1)
+   If Cells(i, 8) > 0 And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 56.1 Then Exit Do
+   
+    If Len(Cells(i, 8)) = 0 Then k = k - 1
+    
+    Loop
+
+If Cells(i, 8) > 0 And Cells(i, 8) <= 59 Then Cells(i, 5) = sF
+If Len(Cells(i, 8)) = 0 Or Cells(i, 8) > 64.6 Then Cells(i, 5) = "Failed"
+ Cells(i, 8) = ""
+   sR = ""
+   sF = ""
+   ss = ""
+   
+
+Do While Cells(i, 5) <> "Failed"
+ k = 38
+ If m2 = 0 Or m2 = 3 Then k = Len(Cells(i, 5)) + m2
+ss = Mid(Cells(i, 4), kk1 - 40, 40) & Cells(i, 3)
+If h = 999 And Len(Cells(i, 3)) <= 38 And Len(Cells(i, 3)) >= kkf Then ss = Mid(Cells(i, 4), kk1 - 40, 40) & Left(Cells(i, 3), kkf)
+If h = 999 And Len(Cells(i, 3)) < kkf Then ss = Mid(Cells(i, 4), kk1 - 40, 40) & Cells(i, 3) & Mid(Cells(i, 4), kk3 + 1, kkf - Len(Cells(i, 3)))
+
+Do While Len(Cells(i, 9)) = 0 Or Cells(i, 9) >= 56.6
+   If Cells(i, 9) >= 56.6 Then k = k - 1
+   sF = Right(ss, k)
+   n = Len(sF)
+   If n < 18 And Cells(i, 9) <= 59 And Cells(i, 9) > 0 Then sF = Right(ss, k + 1)
+   If k < 18 Then Exit Do
+    ka = 0
+    kt = 0
+    kg = 0
+    kc = 0
+  Do While n > 0
+   If UCase(Mid(sF, n, 1)) = "A" Then ka = ka + 1
+   If UCase(Mid(sF, n, 1)) = "T" Then kt = kt + 1
+   If UCase(Mid(sF, n, 1)) = "C" Then kc = kc + 1
+   If UCase(Mid(sF, n, 1)) = "G" Then kg = kg + 1
+   n = n - 1
+   Loop
+   If ka + kt + kc + kg < 18 Then Exit Do
+    j = 0
+    If Len(sF) = ka + kt + kg + kc And (kg + kc) / (ka + kt + kg + kc) <= 0.72 And (kg + kc) / (ka + kt + kg + kc) >= 0.16 Then j = 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc)
+    If j >= 56.6 And j <= 59 Then Cells(i, 9) = j
+    
+    Do While Cells(i, 9) > 0
+    If InStr(1, sF, "AAAAAA") <> 0 Or InStr(1, sF, "TTTTTT") <> 0 Or InStr(1, sF, "CCCCCC") <> 0 Or InStr(1, sF, "GGGGGG") <> 0 Then Cells(i, 9) = ""
+    Exit Do
+    Loop
+    
+    If Cells(i, 9) > 0 And Cells(i, 9) <= 63.3 Then Exit Do
+   If Cells(i, 9) > 0 And Len(sF) = ka + kt + kg + kc And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 56.1 Then sF = Right(ss, k + 1)
+   If Cells(i, 9) > 0 And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 56.1 Then Exit Do
+   
+    If Len(Cells(i, 9)) = 0 Then k = k - 1
+    
+Loop
+If Cells(i, 9) > 0 And Left(sF, 4) = "TTTT" Then sF = Mid(sF, 2, 38)
+If Cells(i, 9) > 0 And Cells(i, 9) <= 59 Then Cells(i, 6) = sF
+If Len(Cells(i, 9)) = 0 Or Cells(i, 9) > 59 Then Cells(i, 5) = "Failed"
+
+Exit Do
+Loop
+   Cells(i, 9) = ""
+   sR = ""
+   sF = ""
+   ss = ""
+
+
+
+jj = 4
+Do While Cells(i, 5) <> "Failed"
+
+Do While jj <= 30
+   k = 40
+   sF = Mid(Cells(i, 4), kk3 + jj, k)
+  j = 2
+Do While Len(Cells(i, 10)) = 0 Or Cells(i, 10) >= 59.9
+   If Cells(i, 10) >= 59.9 Then k = k - 1
+   sF = Left(sF, k)
+   n = Len(sF)
+  If n < 20 And Cells(i, 10) >= 59.9 Then sF = Mid(Cells(i, 4), kk3 + jj, k + 1)
+   If n < 20 Then Exit Do
+    ka = 0
+    kt = 0
+    kg = 0
+    kc = 0
+  Do While n > 0
+   If UCase(Mid(sF, n, 1)) = "A" Then ka = ka + 1
+   If UCase(Mid(sF, n, 1)) = "T" Then kt = kt + 1
+   If UCase(Mid(sF, n, 1)) = "C" Then kc = kc + 1
+   If UCase(Mid(sF, n, 1)) = "G" Then kg = kg + 1
+   n = n - 1
+   Loop
+     If ka + kt + kc + kg < 20 Then Exit Do
+    j = 0
+    If Len(sF) = ka + kt + kg + kc And (kg + kc) / (ka + kt + kg + kc) <= 0.7 And (kg + kc) / (ka + kt + kg + kc) >= 0.21 Then j = 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc)
+    If j >= 59.9 And j <= 62.9 Then Cells(i, 10) = j
+     
+     Do While Abs(Cells(i, 10) - 60.4) <= 0.57
+    If InStr(1, sF, "AAAAAA") <> 0 Or InStr(1, sF, "TTTTTT") <> 0 Or InStr(1, sF, "CCCCCC") <> 0 Or InStr(1, sF, "GGGGGG") <> 0 Then Cells(i, 10) = ""
+   If Left(sF, 4) = "AAAA" Or Left(sF, 4) = "TTTT" <> 0 Or Left(sF, 4) = "CCCC" <> 0 Or Left(sF, 4) = "GGGG" <> 0 Then Cells(i, 10) = ""
+    If Right(sF, 4) = "AAAA" Or Right(sF, 4) = "TTTT" <> 0 Or Right(sF, 4) = "CCCC" <> 0 Or Right(sF, 4) = "GGGG" <> 0 Then Cells(i, 10) = ""
+    Exit Do
+    Loop
+    
+   If Cells(i, 10) >= 59.9 And Len(sF) = ka + kt + kg + kc And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 59.34 Then sF = Mid(Cells(i, 4), kk3 + jj, k + 1)
+   If Cells(i, 10) >= 59.9 And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 59.34 Then Exit Do
+  
+ If Len(Cells(i, 10)) = 0 Then k = k - 1
+    
+Loop
+   
+If Len(Cells(i, 7)) = 0 And Abs(Cells(i, 10) - 60.4) <= 0.57 Then Cells(i, 7) = sF
+ Do While Abs(Cells(i, 10) - 60.4) <= 0.57 And Len(Cells(i, 7)) <> 0
+   If Left(sF, 1) <> "A" And Left(sF, 1) <> "T" And Abs(Len(sF) - 29.5) <= 4.5 Then Cells(i, 7) = sF
+ If Left(Cells(i, 7), 1) <> "G" And Left(Cells(i, 7), 1) <> "C" And Abs(Len(sF) - 29.5) <= 4.5 Then Cells(i, 7) = sF
+ If Cells(i, 7) <> sF And Abs(Len(Cells(i, 7)) - 29) > 5 And Abs(Len(sF) - 29) <= Abs(Len(Cells(i, 7)) - 29) Then Cells(i, 7) = sF
+Exit Do
+Loop
+
+jj = jj + 1
+If jj >= 10 And Left(Cells(i, 7), 1) <> "A" And Left(Cells(i, 7), 1) <> "T" And Len(Cells(i, 7)) <> 0 Then Exit Do
+If jj >= 20 And Len(Cells(i, 7)) <> 0 Then Exit Do
+Cells(i, 10) = ""
+
+Loop
+
+If Len(Cells(i, 7)) = 0 Then Cells(i, 5) = "Failed"
+If Cells(i, 5) = "Failed" Then Cells(i, 10) = ""
+
+If Len(Cells(i, 7)) <> 0 Then sF = Cells(i, 7)
+If Len(Cells(i, 7)) = 0 Then sF = ""
+If Len(Cells(i, 7)) <> 0 Then Cells(i, 7) = ""
+n = Len(sF)
+ Do While n > 0
+   If UCase(Mid(sF, n, 1)) = "A" Then Cells(i, 7) = Cells(i, 7) & "T"
+   If UCase(Mid(sF, n, 1)) = "T" Then Cells(i, 7) = Cells(i, 7) & "A"
+   If UCase(Mid(sF, n, 1)) = "C" Then Cells(i, 7) = Cells(i, 7) & "G"
+   If UCase(Mid(sF, n, 1)) = "G" Then Cells(i, 7) = Cells(i, 7) & "C"
+   n = n - 1
+   Loop
+
+Exit Do
+Loop
+
+Exit Do
+
+Loop
+If gc = 1 And Cells(i, 5) = "Failed" Then FR = -1
+ If kkf <= kkr And kkf > 0 And Cells(i, 5) = "Failed" Then FR = -1
+If gc = 1 And Cells(i, 5) = "Failed" Then Cells(i, 5) = ""
+If gc = 1 And Cells(i, 5) = "Failed" Then Cells(i, 6) = ""
+If gc = 1 And Cells(i, 5) = "Failed" Then Cells(i, 7) = ""
+
+   sR = ""
+   sF = ""
+   ss = ""
+   j = 2
+Do While FR = -1
+    k = 38
+    ss = Cells(i, 2) & Mid(Cells(i, 4), kk3 + 1, 40)
+    
+    If h = 999 And Len(Cells(i, 2)) <= 38 And Len(Cells(i, 2)) >= kkr Then ss = Right(Cells(i, 2), kkr) & Mid(Cells(i, 4), kk3 + 1, 40)
+    If h = 999 And Len(Cells(i, 2)) < kkr Then ss = Mid(Cells(i, 4), kk1 - (kkr - Len(Cells(i, 2))), kkr - Len(Cells(i, 2))) & Cells(i, 2) & Mid(Cells(i, 4), kk3 + 1, 40)
+
+Do While Len(Cells(i, 8)) = 0 Or Cells(i, 8) >= 56.6
+   If Cells(i, 8) >= 56.6 Then k = k - 1
+   sR = Left(ss, k)
+   n = Len(sR)
+   If n < 18 And Cells(i, 8) <= 59 And Cells(i, 8) > 0 Then sR = Left(ss, k + 1)
+   If k < 18 Then Exit Do
+    ka = 0
+    kt = 0
+    kg = 0
+    kc = 0
+  Do While n > 0
+   If UCase(Mid(sR, n, 1)) = "A" Then ka = ka + 1
+   If UCase(Mid(sR, n, 1)) = "T" Then kt = kt + 1
+   If UCase(Mid(sR, n, 1)) = "C" Then kc = kc + 1
+   If UCase(Mid(sR, n, 1)) = "G" Then kg = kg + 1
+   n = n - 1
+   Loop
+    If ka + kt + kc + kg < 18 Then Exit Do
+    j = 0
+    If Len(sR) = ka + kt + kg + kc And (kg + kc) / (ka + kt + kg + kc) <= 0.72 And (kg + kc) / (ka + kt + kg + kc) >= 0.16 Then j = 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc)
+    If j >= 56.6 And j <= 59 Then Cells(i, 8) = j
+    Do While Cells(i, 8) > 0
+    If InStr(1, sR, "AAAAAA") <> 0 Or InStr(1, sR, "TTTTTT") <> 0 Or InStr(1, sR, "CCCCCC") <> 0 Or InStr(1, sR, "GGGGGG") <> 0 Then Cells(i, 8) = ""
+    Exit Do
+    Loop
+    
+    If Cells(i, 8) > 0 And Cells(i, 8) <= 57.8 Then Exit Do
+   If Cells(i, 8) > 0 And Len(sR) = ka + kt + kg + kc And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 56.1 Then sR = Left(ss, k + 1)
+   If Cells(i, 8) > 0 And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 56.1 Then Exit Do
+    
+   If Len(Cells(i, 8)) = 0 Then k = k - 1
+ Loop
+ n = Len(sR)
+ Cells(i, 5) = ""
+  Do While n > 0 And Cells(i, 8) > 0 And Cells(i, 8) <= 59
+   If UCase(Mid(sR, n, 1)) = "A" Then Cells(i, 5) = Cells(i, 5) & "T"
+   If UCase(Mid(sR, n, 1)) = "T" Then Cells(i, 5) = Cells(i, 5) & "A"
+   If UCase(Mid(sR, n, 1)) = "C" Then Cells(i, 5) = Cells(i, 5) & "G"
+   If UCase(Mid(sR, n, 1)) = "G" Then Cells(i, 5) = Cells(i, 5) & "C"
+   n = n - 1
+   Loop
+
+If Len(Cells(i, 8)) = 0 Or Cells(i, 8) > 64.6 Then Cells(i, 5) = "Failed"
+Cells(i, 8) = ""
+  sR = ""
+   sF = ""
+   ss = ""
+  
+
+Do While Cells(i, 5) <> "Failed"
+k = 38
+ If m2 = 0 Or m2 = 3 Then k = Len(Cells(i, 5)) + m2
+ss = Cells(i, 3) & Mid(Cells(i, 4), kk3 + 1, 40)
+If h = 999 And Len(Cells(i, 3)) >= kkr And Len(Cells(i, 3)) <= 38 Then ss = Right(Cells(i, 3), kkr) & Mid(Cells(i, 4), kk3 + 1, 40)
+If h = 999 And Len(Cells(i, 3)) < kkr Then ss = Mid(Cells(i, 4), kk1 - (kkr - Len(Cells(i, 3))), kkr - Len(Cells(i, 3))) & Cells(i, 3) & Mid(Cells(i, 4), kk3 + 1, 40)
+
+Do While Len(Cells(i, 9)) = 0 Or Cells(i, 9) >= 56.6
+   If Cells(i, 9) >= 56.6 Then k = k - 1
+   sR = Left(ss, k)
+   n = Len(sR)
+   If n < 18 And Cells(i, 9) <= 59 And Cells(i, 9) > 0 Then sR = Left(ss, k + 1)
+   If k < 18 Then Exit Do
+   ka = 0
+    kt = 0
+    kg = 0
+    kc = 0
+  Do While n > 0
+   If UCase(Mid(sR, n, 1)) = "A" Then ka = ka + 1
+   If UCase(Mid(sR, n, 1)) = "T" Then kt = kt + 1
+   If UCase(Mid(sR, n, 1)) = "C" Then kc = kc + 1
+   If UCase(Mid(sR, n, 1)) = "G" Then kg = kg + 1
+   n = n - 1
+   Loop
+    If ka + kt + kc + kg < 18 Then Exit Do
+    j = 0
+    If Len(sR) = ka + kt + kg + kc And (kg + kc) / (ka + kt + kg + kc) <= 0.72 And (kg + kc) / (ka + kt + kg + kc) >= 0.16 Then j = 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc)
+    If j >= 56.6 And j <= 59 Then Cells(i, 9) = j
+    Do While Cells(i, 9) > 0
+    If InStr(1, sR, "AAAAAA") <> 0 Or InStr(1, sR, "TTTTTT") <> 0 Or InStr(1, sR, "CCCCCC") <> 0 Or InStr(1, sR, "GGGGGG") <> 0 Then Cells(i, 9) = ""
+    Exit Do
+    Loop
+    
+    If Cells(i, 9) > 0 And Cells(i, 9) <= 63.3 Then Exit Do
+   If Cells(i, 9) > 0 And Len(sR) = ka + kt + kg + kc And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 56.1 Then sR = Left(ss, k + 1)
+   If Cells(i, 9) > 0 And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 56.1 Then Exit Do
+     
+    If Len(Cells(i, 9)) = 0 Then k = k - 1
+    
+   Loop
+
+ If Cells(i, 9) > 0 Then n = Len(sR)
+ Cells(i, 6) = ""
+  Do While n > 0 And Cells(i, 9) > 0 And Cells(i, 9) <= 59
+   If UCase(Mid(sR, n, 1)) = "A" Then Cells(i, 6) = Cells(i, 6) & "T"
+   If UCase(Mid(sR, n, 1)) = "T" Then Cells(i, 6) = Cells(i, 6) & "A"
+   If UCase(Mid(sR, n, 1)) = "C" Then Cells(i, 6) = Cells(i, 6) & "G"
+   If UCase(Mid(sR, n, 1)) = "G" Then Cells(i, 6) = Cells(i, 6) & "C"
+   n = n - 1
+   Loop
+
+If Len(Cells(i, 9)) = 0 Or Cells(i, 9) > 59 Then Cells(i, 5) = "Failed"
+
+Exit Do
+Loop
+   Cells(i, 9) = ""
+   sR = ""
+   sF = ""
+   ss = ""
+  
+jj = 4
+Do While Cells(i, 5) <> "Failed"
+
+Do While jj <= 30
+   k = 40
+   If kk1 < k + jj + 18 Then Exit Do
+   sF = Mid(Cells(i, 4), kk1 - k - jj, k)
+  j = 2
+Do While Len(Cells(i, 10)) = 0 Or Cells(i, 10) >= 59.9
+   If Cells(i, 10) >= 59.9 Then k = k - 1
+   sF = Right(sF, k)
+   n = Len(sF)
+  If n < 20 And Cells(i, 10) >= 59.9 Then sF = Mid(Cells(i, 4), kk1 - k - 1 - jj, k + 1)
+   If n < 20 Then Exit Do
+    ka = 0
+    kt = 0
+    kg = 0
+    kc = 0
+  Do While n > 0
+   If UCase(Mid(sF, n, 1)) = "A" Then ka = ka + 1
+   If UCase(Mid(sF, n, 1)) = "T" Then kt = kt + 1
+   If UCase(Mid(sF, n, 1)) = "C" Then kc = kc + 1
+   If UCase(Mid(sF, n, 1)) = "G" Then kg = kg + 1
+   n = n - 1
+   Loop
+
+   If ka + kt + kc + kg < 20 Then Exit Do
+    j = 0
+    If Len(sF) = ka + kt + kg + kc And (kg + kc) / (ka + kt + kg + kc) <= 0.7 And (kg + kc) / (ka + kt + kg + kc) >= 0.21 Then j = 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc)
+    If j >= 59.9 And j <= 62.9 Then Cells(i, 10) = j
+     
+     Do While Abs(Cells(i, 10) - 60.4) <= 0.57
+    If InStr(1, sF, "AAAAAA") <> 0 Or InStr(1, sF, "TTTTTT") <> 0 Or InStr(1, sF, "CCCCCC") <> 0 Or InStr(1, sF, "GGGGGG") <> 0 Then Cells(i, 10) = ""
+   If Left(sF, 4) = "AAAA" Or Left(sF, 4) = "TTTT" <> 0 Or Left(sF, 4) = "CCCC" <> 0 Or Left(sF, 4) = "GGGG" <> 0 Then Cells(i, 10) = ""
+    If Right(sF, 4) = "AAAA" Or Right(sF, 4) = "TTTT" <> 0 Or Right(sF, 4) = "CCCC" <> 0 Or Right(sF, 4) = "GGGG" <> 0 Then Cells(i, 10) = ""
+    Exit Do
+    Loop
+    
+   If Cells(i, 10) >= 59.9 And Len(sF) = ka + kt + kg + kc And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 59.34 Then sF = Mid(Cells(i, 4), kk1 - k - 1 - jj, k + 1)
+   If Cells(i, 10) >= 59.9 And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 59.34 Then Exit Do
+   
+ If Len(Cells(i, 10)) = 0 Then k = k - 1
+    
+Loop
+   
+If Len(Cells(i, 7)) = 0 And Abs(Cells(i, 10) - 60.4) <= 0.57 Then Cells(i, 7) = sF
+
+ Do While Abs(Cells(i, 10) - 60.4) <= 0.57 And Len(Cells(i, 7)) <> 0
+   If Right(sF, 1) <> "A" And Right(sF, 1) <> "T" And Abs(Len(sF) - 29.5) <= 4.5 Then Cells(i, 7) = sF
+ If Right(Cells(i, 7), 1) <> "G" And Right(Cells(i, 7), 1) <> "C" And Abs(Len(sF) - 29.5) <= 4.5 Then Cells(i, 7) = sF
+ If Cells(i, 7) <> sF And Abs(Len(Cells(i, 7)) - 29) > 5 And Abs(Len(sF) - 29) <= Abs(Len(Cells(i, 7)) - 29) Then Cells(i, 7) = sF
+Exit Do
+Loop
+
+jj = jj + 1
+If jj >= 10 And Right(Cells(i, 7), 1) <> "A" And Right(Cells(i, 7), 1) <> "T" And Len(Cells(i, 7)) <> 0 Then Exit Do
+If jj >= 20 And Len(Cells(i, 7)) <> 0 Then Exit Do
+Cells(i, 10) = ""
+
+Loop
+If Len(Cells(i, 7)) = 0 Then Cells(i, 5) = "Failed"
+If Cells(i, 5) = "Failed" Then Cells(i, 10) = ""
+
+Exit Do
+Loop
+
+Exit Do
+Loop
+
+Exit Do
+Loop
+
+
+If gc = 2 And Cells(i, 5) = "Failed" Then FR = 3
+If kkf > kkr And FR = -1 And kkf < 4 And Cells(i, 5) = "Failed" Then FR = 3
+If FR = 3 Then Cells(i, 5) = ""
+If FR = 3 Then Cells(i, 6) = ""
+If FR = 3 Then Cells(i, 7) = ""
+   sR = ""
+   sF = ""
+   ss = ""
+Do While FR = 3
+
+ Cells(i, 8) = ""
+   Cells(i, 9) = ""
+   Cells(i, 10) = ""
+   k = 38
+  ss = Mid(Cells(i, 4), kk1 - 40, 40) & Cells(i, 2)
+  If h = 999 And Len(Cells(i, 2)) <= 38 And Len(Cells(i, 2)) >= kkf Then ss = Mid(Cells(i, 4), kk1 - 40, 40) & Left(Cells(i, 2), kkf)
+  If h = 999 And Len(Cells(i, 2)) < kkf Then ss = Mid(Cells(i, 4), kk1 - 40, 40) & Cells(i, 2) & Mid(Cells(i, 4), kk3 + 1, kkf - Len(Cells(i, 2)))
+Do While Len(Cells(i, 8)) = 0 Or Cells(i, 8) >= 56.6
+   If Cells(i, 8) >= 56.6 Then k = k - 1
+   sF = Right(ss, k)
+   n = Len(sF)
+   If n < 18 And Cells(i, 8) <= 59 And Cells(i, 8) > 0 Then sF = Right(ss, k + 1)
+   If k < 18 Then Exit Do
+    ka = 0
+    kt = 0
+    kg = 0
+    kc = 0
+  Do While n > 0
+   If UCase(Mid(sF, n, 1)) = "A" Then ka = ka + 1
+   If UCase(Mid(sF, n, 1)) = "T" Then kt = kt + 1
+   If UCase(Mid(sF, n, 1)) = "C" Then kc = kc + 1
+   If UCase(Mid(sF, n, 1)) = "G" Then kg = kg + 1
+   n = n - 1
+   Loop
+     If ka + kt + kc + kg < 18 Then Exit Do
+     j = 0
+    If Len(sF) = ka + kt + kg + kc And (kg + kc) / (ka + kt + kg + kc) <= 0.72 And (kg + kc) / (ka + kt + kg + kc) >= 0.16 Then j = 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc)
+    If j >= 56.6 And j <= 59 Then Cells(i, 8) = j
+    
+    
+    Do While Cells(i, 8) > 0
+    If InStr(1, sF, "AAAAAA") <> 0 Or InStr(1, sF, "TTTTTT") <> 0 Or InStr(1, sF, "CCCCCC") <> 0 Or InStr(1, sF, "GGGGGG") <> 0 Then Cells(i, 8) = ""
+    Exit Do
+    Loop
+    
+    If Cells(i, 8) > 0 And Cells(i, 8) <= 57.8 Then Exit Do
+    If Cells(i, 8) > 0 And Len(sF) = ka + kt + kg + kc And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 56.1 Then sF = Right(ss, k + 1)
+    If Cells(i, 8) > 0 And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 56.1 Then Exit Do
+     
+    If Len(Cells(i, 8)) = 0 Then k = k - 1
+    Loop
+
+If Cells(i, 8) > 0 And Cells(i, 8) <= 59 Then Cells(i, 5) = sF
+If Len(Cells(i, 8)) = 0 Or Cells(i, 8) > 64.6 Then Cells(i, 5) = "Failed"
+ Cells(i, 8) = ""
+   sR = ""
+   sF = ""
+   ss = ""
+   j = 2
+
+
+Do While Cells(i, 5) <> "Failed"
+ k = 38
+ If m2 = 0 Or m2 = 3 Then k = Len(Cells(i, 5)) + m2
+ss = Mid(Cells(i, 4), kk1 - 40, 40) & Cells(i, 3)
+If h = 999 And Len(Cells(i, 3)) <= 38 And Len(Cells(i, 3)) >= kkf Then ss = Mid(Cells(i, 4), kk1 - 40, 40) & Left(Cells(i, 3), kkf)
+If h = 999 And Len(Cells(i, 3)) < kkf Then ss = Mid(Cells(i, 4), kk1 - 40, 40) & Cells(i, 3) & Mid(Cells(i, 4), kk3 + 1, kkf - Len(Cells(i, 3)))
+
+Do While Len(Cells(i, 9)) = 0 Or Cells(i, 9) >= 56.6
+   If Cells(i, 9) >= 56.6 Then k = k - 1
+   sF = Right(ss, k)
+   n = Len(sF)
+   If n < 18 And Cells(i, 9) <= 59 And Cells(i, 9) > 0 Then sF = Right(ss, k + 1)
+   If k < 18 Then Exit Do
+    ka = 0
+    kt = 0
+    kg = 0
+    kc = 0
+  Do While n > 0
+   If UCase(Mid(sF, n, 1)) = "A" Then ka = ka + 1
+   If UCase(Mid(sF, n, 1)) = "T" Then kt = kt + 1
+   If UCase(Mid(sF, n, 1)) = "C" Then kc = kc + 1
+   If UCase(Mid(sF, n, 1)) = "G" Then kg = kg + 1
+   n = n - 1
+   Loop
+     If ka + kt + kc + kg < 18 Then Exit Do
+     j = 0
+    If Len(sF) = ka + kt + kg + kc And (kg + kc) / (ka + kt + kg + kc) <= 0.72 And (kg + kc) / (ka + kt + kg + kc) >= 0.16 Then j = 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc)
+    If j >= 56.6 And j <= 59 Then Cells(i, 9) = j
+    
+    Do While Cells(i, 9) > 0
+    If InStr(1, sF, "AAAAAA") <> 0 Or InStr(1, sF, "TTTTTT") <> 0 Or InStr(1, sF, "CCCCCC") <> 0 Or InStr(1, sF, "GGGGGG") <> 0 Then Cells(i, 9) = ""
+    Exit Do
+    Loop
+    
+    If Cells(i, 9) > 0 And Cells(i, 9) <= 63.3 Then Exit Do
+   If Cells(i, 9) > 0 And Len(sF) = ka + kt + kg + kc And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 56.1 Then sF = Right(ss, k + 1)
+   If Cells(i, 9) > 0 And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 56.1 Then Exit Do
+      
+    If Len(Cells(i, 9)) = 0 Then k = k - 1
+    
+Loop
+
+If Cells(i, 9) > 0 And Cells(i, 9) <= 59 Then Cells(i, 6) = sF
+If Len(Cells(i, 9)) = 0 Or Cells(i, 9) > 59 Then Cells(i, 5) = "Failed"
+
+Exit Do
+Loop
+   Cells(i, 9) = ""
+   sR = ""
+   sF = ""
+   ss = ""
+
+
+jj = 4
+Do While Cells(i, 5) <> "Failed"
+
+Do While jj <= 30
+   k = 40
+   sF = Mid(Cells(i, 4), kk3 + jj, k)
+  j = 2
+Do While Len(Cells(i, 10)) = 0 Or Cells(i, 10) >= 59.9
+   If Cells(i, 10) >= 59.9 Then k = k - 1
+   sF = Left(sF, k)
+   n = Len(sF)
+  If n < 20 And Cells(i, 10) >= 59.9 Then sF = Mid(Cells(i, 4), kk3 + jj, k + 1)
+   If n < 20 Then Exit Do
+    ka = 0
+    kt = 0
+    kg = 0
+    kc = 0
+  Do While n > 0
+   If UCase(Mid(sF, n, 1)) = "A" Then ka = ka + 1
+   If UCase(Mid(sF, n, 1)) = "T" Then kt = kt + 1
+   If UCase(Mid(sF, n, 1)) = "C" Then kc = kc + 1
+   If UCase(Mid(sF, n, 1)) = "G" Then kg = kg + 1
+   n = n - 1
+   Loop
+ If ka + kt + kc + kg < 20 Then Exit Do
+   j = 0
+    If Len(sF) = ka + kt + kg + kc And (kg + kc) / (ka + kt + kg + kc) <= 0.7 And (kg + kc) / (ka + kt + kg + kc) >= 0.21 Then j = 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc)
+    If j >= 59.9 And j <= 62.9 Then Cells(i, 10) = j
+     
+     Do While Abs(Cells(i, 10) - 60.4) <= 0.57
+    If InStr(1, sF, "AAAAAA") <> 0 Or InStr(1, sF, "TTTTTT") <> 0 Or InStr(1, sF, "CCCCCC") <> 0 Or InStr(1, sF, "GGGGGG") <> 0 Then Cells(i, 10) = ""
+   If Left(sF, 4) = "AAAA" Or Left(sF, 4) = "TTTT" <> 0 Or Left(sF, 4) = "CCCC" <> 0 Or Left(sF, 4) = "GGGG" <> 0 Then Cells(i, 10) = ""
+    If Right(sF, 4) = "AAAA" Or Right(sF, 4) = "TTTT" <> 0 Or Right(sF, 4) = "CCCC" <> 0 Or Right(sF, 4) = "GGGG" <> 0 Then Cells(i, 10) = ""
+    Exit Do
+    Loop
+    
+   If Cells(i, 10) >= 59.9 And Len(sF) = ka + kt + kg + kc And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 59.34 Then sF = Mid(Cells(i, 4), kk3 + jj, k + 1)
+   If Cells(i, 10) >= 59.9 And 72 + (37.4 * (kg + kc) - 747) / (ka + kt + kg + kc - 1) < 59.34 Then Exit Do
+  
+ If Len(Cells(i, 10)) = 0 Then k = k - 1
+    
+Loop
+   
+If Len(Cells(i, 7)) = 0 And Abs(Cells(i, 10) - 60.4) <= 0.57 Then Cells(i, 7) = sF
+
+ Do While Abs(Cells(i, 10) - 60.4) <= 0.57 And Len(Cells(i, 7)) <> 0
+   If Left(sF, 1) <> "A" And Left(sF, 1) <> "T" And Abs(Len(sF) - 29.5) <= 4.5 Then Cells(i, 7) = sF
+ If Left(Cells(i, 7), 1) <> "G" And Left(Cells(i, 7), 1) <> "C" And Abs(Len(sF) - 29.5) <= 4.5 Then Cells(i, 7) = sF
+ If Cells(i, 7) <> sF And Abs(Len(Cells(i, 7)) - 29) > 5 And Abs(Len(sF) - 29) <= Abs(Len(Cells(i, 7)) - 29) Then Cells(i, 7) = sF
+Exit Do
+Loop
+
+jj = jj + 1
+If jj >= 10 And Left(Cells(i, 7), 1) <> "A" And Left(Cells(i, 7), 1) <> "T" And Len(Cells(i, 7)) <> 0 Then Exit Do
+If jj >= 20 And Len(Cells(i, 7)) <> 0 Then Exit Do
+Cells(i, 10) = ""
+
+Loop
+
+If Len(Cells(i, 7)) = 0 Then Cells(i, 5) = "Failed"
+If Cells(i, 5) = "Failed" Then Cells(i, 10) = ""
+
+If Len(Cells(i, 7)) <> 0 Then sF = Cells(i, 7)
+If Len(Cells(i, 7)) = 0 Then sF = ""
+If Len(Cells(i, 7)) <> 0 Then Cells(i, 7) = ""
+n = Len(sF)
+ Do While n > 0
+   If UCase(Mid(sF, n, 1)) = "A" Then Cells(i, 7) = Cells(i, 7) & "T"
+   If UCase(Mid(sF, n, 1)) = "T" Then Cells(i, 7) = Cells(i, 7) & "A"
+   If UCase(Mid(sF, n, 1)) = "C" Then Cells(i, 7) = Cells(i, 7) & "G"
+   If UCase(Mid(sF, n, 1)) = "G" Then Cells(i, 7) = Cells(i, 7) & "C"
+   n = n - 1
+   Loop
+
+Exit Do
+Loop
+
+Exit Do
+Loop
+
+Cells(i, 8) = ""
+Cells(i, 9) = ""
+Cells(i, 10) = ""
+
+If q2 > 0 Then Cells(i, 4) = Left(Cells(i, 4), Len(Cells(i, 4)) - q2)
+If q1 > 0 Then Cells(i, 4) = Right(Cells(i, 4), Len(Cells(i, 4)) - q1)
+q1 = 0
+q2 = 0
+If Right(Cells(i, 5), 5) = Right(Cells(i, 6), 5) Then Cells(i, 5) = "Failed"
+Do While Cells(i, 5) = "Failed" Or Len(Cells(i, 5)) = 0 Or Len(Cells(i, 6)) = 0 Or Cells(i, 7) = ""
+   Cells(i, 5) = "Failed"
+   Cells(i, 6) = ""
+   Cells(i, 7) = ""
+   h2 = h2 + 1
+Exit Do
+Loop
+
+Do While Cells(i, 5) <> "Failed"
+If Left(Cells(i, 5), 5) = "TTTTT" Then Cells(i, 5) = Mid(Cells(i, 5), 2, 38)
+If Left(Cells(i, 6), 4) = "TTTT" Then Cells(i, 6) = Mid(Cells(i, 6), 2, 38)
+If Left(Cells(i, 6), 4) = "TTTT" Then Cells(i, 6) = Mid(Cells(i, 6), 2, 38)
+Cells(i, 5) = "GAAGGTGACCAAGTTCATGCT" & Cells(i, 5)
+Cells(i, 6) = "GAAGGTCGGAGTCAACGGATT" & Cells(i, 6)
+Cells(i, 5).Select
+With Selection.Font
+        .ThemeColor = xlThemeColorLight1
+       
+    End With
+    With ActiveCell.Characters(Start:=1, Length:=21).Font
+        .Color = -65536
+    End With
+Exit Do
+Loop
+
+Do While Len(Cells(i, 6)) > 38
+Cells(i, 6).Select
+  With Selection.Font
+        .ThemeColor = xlThemeColorLight1
+       
+    End With
+    With ActiveCell.Characters(Start:=1, Length:=21).Font
+        .Color = -16776961
+    End With
+Exit Do
+Loop
+
+i = i + 1
+If i Mod 5 = 0 Then Application.ScreenUpdating = True
+Loop
+
+If i > 2 Then UserForm1.Label2 = "Success Rate：" & Format((i - 2 - h2) / (i - 2), "0.000") * 100 & "%"
+If Timer - tim < 100 Then UserForm1.Label3 = "Time-consuming：" & Format(Abs(Timer - tim), "0.00") & " s"
+If Timer - tim >= 100 Then UserForm1.Label3 = "Time-consuming：" & Format(Timer - tim, "0") & " s"
+UserForm1.Show
+End Sub
