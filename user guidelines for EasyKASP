@@ -1,1 +1,53 @@
-
+User Manual for EasyKASP: KASP primer design
+Updated on October 15, 2025
+Disclaimer: Although our lab at Beijing Vegetable Research Center (BVRC) has conducted extensive testing and KASP primers designed by EasyKASP are generally reliable. However, not all primers are guaranteed to produce successful genotyping results. For critical SNP or InDel variations where EasyKASP fails to design primers, we recommend users exploring other available software. 
+If you have any questions or suggestions, please email us at BVRC_SNP@126.com.
+1 Introduction
+As a third-generation molecular marker technology, single nucleotide polymorphisms (SNPs) are ideal for biological selective breeding due to their wide distribution, high throughput, genetic stability, and ease of standardization. The most commonly used method for SNP genotyping is Kompetitive Allele-Specific PCR (KASP), which offers high throughput, low cost, and high accuracy. KASP technology can also be applied to genotype certain InDel variations.
+The Vegetable Research Center of the Beijing Academy of Agriculture and Forestry Sciences was the first in China to adopt an LGC Genomics system for high-throughput SNP genotyping based on KASP technology. Currently, our lab designs at least 10,000 KASP primers annually and successfully genotypes over one million SNP data points. We have established a robust KASP primer design pipeline, with an experimentally verified success rate exceeding 95%.
+Based on this experience, we developed EasyKASP—an Excel VBA-based tool for designing KASP primers for both SNP and InDel variations.
+2 Installing EasyKASP
+2.1 System Requirements
+EasyKASP was developed on Excel-VBA platform, an Office application development language, and runs directly in Microsoft Office installed without requiring an internet connection.
+Hardware: CPU with at least one core, RAM ≥1GB. 
+Software: Microsoft Office Excel ( version 2007 or later recommended.
+2.2 Installation steps 
+Note: If you have already have an Excel file containing the EasyKASP macros, you may skip this section.
+Step 1: Create a New Excel File and Enable the Developer Tab
+By default, VBA developer tools are hidden. To enable them:
+Go to File → Options → Customize Ribbon
+In the right-hand panel, check the box for Developer
+Click OK. The Developer tab will now appear in the Excel ribbon.
+Step 2: Open the VBA Editor and Insert the Code
+Go to the Developer tab and click Visual Basic (Figure 1A).
+In the VBA window, go to Insert → Module. A new module named "Module1" will appear.
+Double-click the module to open the code window and paste the EasyKASP source code into it (Figure 1B).
+Step 3: Assign a Macro Button
+Enter the following column headers in the first four columns: SNP ID, Allele 1, Allele 2, and Flanking Sequence.
+Go to the Home tab, insert a shape, and label it (e.g., "Start") .
+Right-click the shape, select Assign Macro, and choose the EasyKASP macro. Save the file in .xlsm format.
+Congratulations—EasyKASP is now installed and ready to use.
+3. Designing KASP Primers
+3.1 Input Variation and Flanking Sequence Information
+Prepare your data in four columns as shown in Figure 3:
+Column A: Names of SNP or InDel variation sites
+Column B: Nucleotide of the first allele
+Column C: Nucleotide of the second allele
+Column D: Flanking sequence of the variation site
+Important Notes: The nucleotide variations in Columns B and C must exactly match the bracketed base in the flanking sequence. Provide at least 60 bp of flanking sequence on each side of the variation. Enclose the target SNP or InDel in brackets[].
+Use parentheses ()or degenerate bases to indicate other variations. Do not use spaces or hyphens for missing nucleotides.
+3.2 Running EasyKASP
+Once the sequences are prepared, click the "Start" button. The tool will automatically design primers. A confirmation message will appear upon completion—click "OK".
+The output includes: Primer_X and Primer_Y: Allele-specific primers, each with a 21 bp adapter sequence. Primer_C: Universal primer sequence. Sites that fail to design will be labeled "Failed" .
+4. Additional Notes
+KASP genotyping relies on fluorescence signals rather than amplicon length, which limits the flexibility of primer design. Allele-specific primers must be located within 20–30 bp upstream or downstream of the target SNP/InDel, and amplicon lengths are typically between 50–100 bp.
+Not all genetic variations are suitable for KASP assays, and not all designed primers will yield successful genotyping results. To ensure specificity:
+Primers must be single-copy in the genome to avoid nonspecific amplification.
+Flanking sequence alignment or experimental validation is recommended to confirm product uniqueness.
+Non-target variations in flanking regions should be considered, as they may affect primer binding.
+The quality of the reference genome and potential sequencing errors may influence sequence accuracy.
+Undiscovered variations near the target site may interfere with KASP genotyping.
+For critical genetic variations, we recommend verifying the target and flanking regions via Sanger sequencing before designing KASP primers.
+________________________________________
+Revised by Jian Zhang 
+Contact: BVRC_SNP@126.com
